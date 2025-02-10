@@ -1,10 +1,15 @@
 package models;
 
-public abstract class TeamListener {
+import java.awt.event.ActionListener;
+import java.util.Scanner;
+
+public class TeamListener {
     private final String name;
     private final int index;
-    private final TeamSwallow teamSwallow;
+    private TeamSwallow teamSwallow;
     private String currentAnswer;
+    private boolean isFinalized = false;
+    private Scanner scanner;
 
     //Можно заменить строителем
     public TeamListener(String name) {
@@ -19,10 +24,10 @@ public abstract class TeamListener {
         this.teamSwallow = null;
     }
 
-    public TeamListener(String name, TeamSwallow teamSwallow) {
+    public TeamListener(String name, Organizer teamSwallow) {
         index = -1;
         this.name = name;
-        this.teamSwallow = teamSwallow;
+        this.teamSwallow = new TeamSwallow(teamSwallow, this);
     }
 
     public TeamListener(int index, String name, TeamSwallow teamSwallow) {
@@ -35,16 +40,40 @@ public abstract class TeamListener {
         return name;
     }
 
+    public void setTeamSwallow(TeamSwallow teamSwallow) {
+        this.teamSwallow = teamSwallow;
+    }
+
     public String getCurrentAnswer() {
         return currentAnswer;
     }
 
-    public void setCurrentAnswer(String currentAnswer) {
-        this.currentAnswer = currentAnswer;
+    public void setCurrentAnswer() {
+//        if (isFinalized) {
+//            System.out.println("Ответ уже принят, изменения невозможны.");
+//            return;
+//        }
+        if (scanner == null) {
+            scanner = new Scanner(System.in);
+        }
+        for (isFinalized = false; !isFinalized; isFinalized = !scanner.nextLine().equals("н")) {
+            System.out.println("Введите свой ответ:");
+            this.currentAnswer = scanner.nextLine();
+            System.out.println("Ответ окончательный? (д/н)");
+        }
+        teamSwallow.submitAnswer();
+    }
+
+    public boolean isFinalized() {
+        return isFinalized;
     }
 
     public int getIndex() {
         return index;
+    }
+
+    public void eraseAnswer() {
+        currentAnswer = "";
     }
 
     public void submitAppeal(String appealContent) {
@@ -56,12 +85,16 @@ public abstract class TeamListener {
     }
 
     public void setMessage(String message) {
-        System.out.printf(message);
+        System.out.println(message);
     }
 
-    public void setQuestion(String question) {
-        setMessage(question);
-
-        setCurrentAnswer( ""/*read from keyboard*/ );
+    @Override
+    public String toString() {
+        if (index != -1) {
+            return "Команда " + index +
+                    ") '" + name + "\' ";
+        } else {
+            return "Команда '" + name + "\' ";
+        }
     }
 }

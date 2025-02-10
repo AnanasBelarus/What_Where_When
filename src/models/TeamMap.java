@@ -32,4 +32,9 @@ public class TeamMap {
     public void activate() {
         isActive = true;
     }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
 }

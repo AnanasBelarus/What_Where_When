@@ -6,7 +6,7 @@ import java.util.List;
 public class Host {
     private List<TeamListener> teams;
     private AbstractQuestion currentQuestion;
-
+    private final int speed = 850 / 60;
 
     public Host(List<TeamListener> teams) {
         this.teams = teams;
@@ -38,17 +38,13 @@ public class Host {
         teams.remove(team);
     }
 
-    public void tellQuestion() {
-        for (TeamListener team : teams) {
-            team.setQuestion(currentQuestion.getQuestion());
-        }
-    }
 
-    public void tellAnswer() {
+
+    public void tellAnswer() throws InterruptedException {
         speak(currentQuestion.getAnswer());
     }
 
-    public void speak(String message) {
+    public void speak(String message) throws InterruptedException {
         for (TeamListener team : teams) {
             team.setMessage(message);
         }
